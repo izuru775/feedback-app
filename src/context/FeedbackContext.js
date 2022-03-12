@@ -1,5 +1,4 @@
 import { createContext, useState ,useEffect} from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 const FeedbackContext = createContext();
 
@@ -34,10 +33,18 @@ export const FeedbackProvider = ({ children }) => {
     setFeedback(feedback.map((item)=>item.id === id?{...item,...updItem}:item))
   }
   // Add feedback
-  const addFeedback = (newFeedback) => {
-    newFeedback.id = uuidv4(); // To generate unique id
-    setFeedback([newFeedback, ...feedback]); // Since state is immutable, you need to create a new array with newfeedback
-  };
+  const addFeedback = async (newFeedback) => {
+    const response = await fetch('/feedback',{
+      method:'POST',
+      headers:{
+        'Content-Type':'Application/json'
+      },
+      body:JSON.stringify(newFeedback)
+    })
+    const data = await response.json()
+
+    setFeedback([data, ...feedback]) // Since state is immutable, you need to create a new array with newfeedback
+  }
   // Set items to be updated
   const editFeedback =(item)=>{
     setFeedbackEdit({
